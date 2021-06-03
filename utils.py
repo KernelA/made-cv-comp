@@ -1,9 +1,12 @@
 import json
+from typing import List, Optional
 
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 import torch
+from matplotlib import pyplot as plt
+from matplotlib import patches
 
 
 def simplify_contour(contour, n_corners=4):
@@ -195,6 +198,23 @@ def pred_to_string(pred, alphabet):
 def load_json(file):
     with open(file, 'r') as f:
         return json.load(f)
+
+
+def draw_bbox(image, bbox_xyxy: List[int], pred_xyxy: Optional[List[int]] = None):
+    fig = plt.figure(figsize=(10, 10))
+    ax = fig.subplot(111)
+    ax.imshow(image)
+
+    x1, y1, x2, y2 = bbox_xyxy
+    true_rectangle = patches.Reatcnagle((x1, y1), x2 - x1, y2 - y2, fill=False, edgecolor="green")
+    ax.add_patch(true_rectangle)
+
+    if pred_xyxy is not None:
+        x1, y1, x2, y2 = pred_xyxy
+        pred_rectangle = patches.Reatcnagle((x1, y1), x2 - x1, y2 - y2, fill=False, edgecolor="red")
+        ax.add_patch(pred_rectangle)
+
+    return fig
 
 
 class npEncoder(json.JSONEncoder):

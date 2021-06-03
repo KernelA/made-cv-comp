@@ -1,12 +1,14 @@
 from typing import List
-import hydra
 
+import hydra
 import torch
 from torch import nn
 from torchvision import ops
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
 import pytorch_lightning as pl
+
+from utils import denormalize_tensor_to_image, draw_bbox
 
 
 class PlateDetector(nn.Module):
@@ -63,9 +65,30 @@ class PlateTrainDetector(pl.LightningModule):
         images, plates_info = batch
         predicted_info = self.model(images)
 
-        miou = ops.box_iou(predicted_info["boxes"], plates_info["boxes"])
+        max_iou = 0
+        min_iou = 0
+        index_min = 0
+        index_max = 0
 
-        self.log(self._target_metric, miou)
+        mean_iou = 0
+
+        for i, (bbox_pred, bbox_true) in enumerate(zip(predicted_info["boxes"], plates_info["boxes"])):
+            iou = ops.box_iou(bbox_pred, bbox_true)[0, 0]
+            if iou > max_iou:
+                max_iou = iou
+                index_max = i
+            if iou < min_iou:
+                min_iou = iou
+                index_min = i
+            mean_iou += iou
+
+        for index in (index_max, index_min):
+            image = denormalize_tensor_to_image(images[index_min].cpu()).permute(1, 2, 0)
+            fig = draw_bbox(image, plates_info["boxes"][index], predicted_info["boxes"][index_min])
+            tensorboard_logger = self.logger.experiment
+            tensorboard_logger.add_figure(fig, glonal_step=self.global_step, close=True)
+
+        self.log(self._target_metric, mean_iou / len(batch), on_epoch=True)
 
     def configure_optimizers(self):
         optimizer = hydra.utils.instantiate(self._optimizer_config, self.model.parameters())

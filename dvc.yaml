@@ -1,0 +1,20 @@
+vars:
+  - raw_data_zip: ./data/raw/made-cv-2021-contest-02-license-plate-recognition.zip
+
+stages:
+  downloda-data:
+    cmd:
+      kaggle competitions download --force -c made-cv-2021-contest-02-license-plate-recognition
+      -p ./data/raw
+    outs:
+      - ${raw_data_zip}:
+          cache: false
+          persist: true
+  unzip:
+    cmd: python -m zipfile -e ${raw_data_zip} ./data/raw/made-cv-2021-contest-02-license-plate-recognition
+    deps:
+      - ${raw_data_zip}
+    outs:
+      - ./data/raw/made-cv-2021-contest-02-license-plate-recognition:
+          cache: false
+          persist: true
