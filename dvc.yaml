@@ -23,7 +23,7 @@ stages:
     cmd: python ./train_plate_detector.py -cd ./configs exp_dir=./exp/detector
     deps:
       - ${train_dir}
-      - ./configs/train_config.yaml
+      - ./configs/train_detector.yaml
       - ./configs/detector/detector_base.yaml
       - ./configs/optimizer/adam.yaml
       - ./scheduler/plato.yaml
