@@ -51,7 +51,8 @@ class PlatesDetectionDataModule(LightningDataModule):
     def __init__(self, *, data_dir: str, train_size: float,
                  seed: int,
                  num_workers: int,
-                 batch_size: int,
+                 train_batch_size: int,
+                 valid_batch_size: int,
                  max_size: int,
                  train_transforms=None,
                  val_transforms=None,
@@ -61,7 +62,8 @@ class PlatesDetectionDataModule(LightningDataModule):
                          val_transforms=val_transforms, test_transforms=test_transforms, dims=dims)
 
         self._seed = seed
-        self._batch_size = batch_size
+        self._train_batch_size = train_batch_size
+        self._valid_batch_size = valid_batch_size
         self._num_workers = num_workers
         self._data_dir = data_dir
         self._train_size = train_size
@@ -84,7 +86,7 @@ class PlatesDetectionDataModule(LightningDataModule):
 
     def val_dataloader(self):
         return data.DataLoader(self._val_data,
-                               batch_size=self._batch_size,
+                               batch_size=self._valid_batch_size,
                                num_workers=self._num_workers,
                                pin_memory=True,
                                collate_fn=collate_fn,
@@ -92,7 +94,7 @@ class PlatesDetectionDataModule(LightningDataModule):
 
     def train_dataloader(self):
         return data.DataLoader(self._train_data,
-                               batch_size=self._batch_size,
+                               batch_size=self._train_batch_size,
                                num_workers=self._num_workers,
                                pin_memory=True,
                                collate_fn=collate_fn,

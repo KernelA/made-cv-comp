@@ -42,11 +42,12 @@ def main(train_config: TrainConfig):
     train_tranaforms = get_train_transform()
 
     data = PlatesDetectionDataModule(data_dir=train_config.data_dir,
-                                     train_size=train_config.train_size,
+                                     train_batch_size=train_config.detector.train_batch_size,
+                                     valid_batch_size=train_config.detector.valid_batch_size,
                                      seed=train_config.seed,
+                                     train_size=train_config.train_size,
                                      max_size=train_config.max_image_size,
                                      num_workers=train_config.num_workers,
-                                     batch_size=train_config.detector.batch_size,
                                      train_transforms=train_tranaforms,
                                      val_transforms=train_tranaforms)
 
@@ -62,7 +63,7 @@ def main(train_config: TrainConfig):
                                       scheduler_config=train_config.scheduler,
                                       target_metric=target_metric_name)
 
-    checkpoint_callback = callbacks.ModelCheckpoint(monitor=target_metric_name + '_step',
+    checkpoint_callback = callbacks.ModelCheckpoint(monitor=target_metric_name,
                                                     dirpath=checkpoint_dir,
                                                     filename=f"{{step}}-{{{target_metric_name}:.4f}}",
                                                     verbose=True,

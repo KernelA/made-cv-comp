@@ -5,4 +5,5 @@ from omegaconf import MISSING
 
 @dataclass
 class TrainDetectorConfig:
-    batch_size: int = MISSING
+    train_batch_size: int = MISSING
+    valid_batch_size: int = MISSING
