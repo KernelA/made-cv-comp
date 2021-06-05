@@ -5,10 +5,6 @@ TORCHVISION_RGB_MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32)
 TORCHVISION_RGB_STD = np.array([0.229, 0.224, 0.225], dtype=np.float32)
 
 
-def denormalize_tensor_to_image(tensor_image):
-    return tensor_image * TORCHVISION_RGB_STD[:, None, None] + TORCHVISION_RGB_MEAN[:, None, None]
-
-
 def get_train_transform():
     return transforms.Compose(
         [

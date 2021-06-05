@@ -113,7 +113,7 @@ class PlateTrainDetector(pl.LightningModule):
             tensorboard_logger.add_figure(
                 "Valid/Pred", fig, global_step=self.global_step, close=True)
 
-        self.log(self._target_metric, mean_iou / len(batch), on_epoch=True)
+        self.log(self._target_metric, mean_iou / len(batch))
 
     def configure_optimizers(self):
         optimizer = hydra.utils.instantiate(self._optimizer_config, self.model.parameters())

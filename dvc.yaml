@@ -9,7 +9,7 @@ stages:
       -p ./data/raw
     outs:
       - ${raw_data_zip}:
-          cache: false
+          cache: true
           persist: true
   unzip:
     cmd: python -m zipfile -e ${raw_data_zip} ${train_dir}
@@ -17,7 +17,7 @@ stages:
       - ${raw_data_zip}
     outs:
       - ${train_dir}:
-          cache: true
+          cache: false
           persist: true
   train-detector:
     cmd: python ./train_plate_detector.py -cd ./configs exp_dir=./exp/detector

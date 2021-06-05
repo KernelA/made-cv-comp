@@ -1,5 +1,5 @@
 import json
-from typing import List, Optional, Sequence
+from typing import Optional, Sequence
 
 import cv2
 import numpy as np
@@ -7,11 +7,11 @@ from matplotlib import pyplot as plt
 import torch
 from matplotlib import pyplot as plt
 from matplotlib import patches
-from matplotlib.collections import PathCollection
 
 from transforms import TORCHVISION_RGB_STD, TORCHVISION_RGB_MEAN
 
 
+@torch.jit.script
 def denormalize_tensor_to_image(tensor_image: torch.tensor):
     """tensor_image is [C x H x W]
     """

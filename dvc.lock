@@ -16,6 +16,6 @@ stages:
       size: 6480287422
     outs:
     - path: ./data/raw/made-cv-2021-contest-02-license-plate-recognition
-      md5: ca1199afdc25a98af8c310c85748a5a9.dir
-      size: 6515097952
-      nfiles: 28794
+      md5: 85747199f2b7b9aaee4b82f7cd79c3b9.dir
+      size: 6515310377
+      nfiles: 28795
