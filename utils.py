@@ -12,10 +12,10 @@ from transforms import TORCHVISION_RGB_STD, TORCHVISION_RGB_MEAN
 
 
 @torch.jit.script
-def denormalize_tensor_to_image(tensor_image: torch.tensor):
+def denormalize_tensor_to_image(tensor_image, mean=TORCHVISION_RGB_MEAN, std=TORCHVISION_RGB_STD):
     """tensor_image is [C x H x W]
     """
-    return tensor_image * TORCHVISION_RGB_STD[:, None, None] + TORCHVISION_RGB_MEAN[:, None, None]
+    return tensor_image * std[:, None, None] + mean[:, None, None]
 
 
 def simplify_contour(contour, n_corners=4):
