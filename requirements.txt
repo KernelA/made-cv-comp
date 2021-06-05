@@ -3,7 +3,7 @@ opencv-python-headless~=4.5
 matplotlib~=3.4
 pytorch-lightning~=1.3
 kaggle
-dvc~=2.3
+dvc[gdrive]~=2.3
 -f https://download.pytorch.org/whl/torch_stable.html
 torch==1.8.1+cu102
 torchvision==0.9.1+cu102

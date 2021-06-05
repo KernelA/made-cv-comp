@@ -63,7 +63,7 @@ def main(train_config: TrainConfig):
 
     checkpoint_callback = callbacks.ModelCheckpoint(monitor=target_metric_name + '_step',
                                                     dirpath=checkpoint_dir,
-                                                    filename=f"{{epoch}}-{{{target_metric_name}:.4f}}",
+                                                    filename=f"{{step}}-{{{target_metric_name}:.4f}}",
                                                     verbose=True,
                                                     save_last=True,
                                                     save_top_k=2,

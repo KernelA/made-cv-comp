@@ -1,5 +1,6 @@
 vars:
   - raw_data_zip: ./data/raw/made-cv-2021-contest-02-license-plate-recognition.zip
+  - train_dir: ./data/raw/made-cv-2021-contest-02-license-plate-recognition
 
 stages:
   downloda-data:
@@ -11,10 +12,25 @@ stages:
           cache: false
           persist: true
   unzip:
-    cmd: python -m zipfile -e ${raw_data_zip} ./data/raw/made-cv-2021-contest-02-license-plate-recognition
+    cmd: python -m zipfile -e ${raw_data_zip} ${train_dir}
     deps:
       - ${raw_data_zip}
     outs:
-      - ./data/raw/made-cv-2021-contest-02-license-plate-recognition:
+      - ${train_dir}:
           cache: true
           persist: true
+  train-detector:
+    cmd: python ./train_plate_detector.py -cd ./configs exp_dir=./exp/detector
+    deps:
+      - ${train_dir}
+      - ./configs/train_config.yaml
+      - ./configs/detector/detector_base.yaml
+      - ./configs/optimizer/adam.yaml
+      - ./scheduler/plato.yaml
+      - ./train_plate_detector.py
+      - ./models/plate_detector.py
+      - ./dataset/plates_data.py
+      - ./dataset/plates_modules.py
+      - ./transforms/transforms.py
+    outs:
+      - ./exp/detector

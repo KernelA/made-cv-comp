@@ -1,0 +1,8 @@
+[cache]
+    type = "hardlink,symlink"
+[core]
+    remote = gdrive
+['remote "gdrive"']
+    url = gdrive://1AhtxQgrrVzI1MjyWqZhO5YnO34mqqwT_/cv-comp2
+    gdrive_client_id = 242291816189-lgitjkbf2ap5so1jfquqohibqq9r5g2m.apps.googleusercontent.com
+    gdrive_client_secret = q0kmtZWjE3Kzp9CVkVgy-K9G

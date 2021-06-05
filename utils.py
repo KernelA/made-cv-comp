@@ -217,14 +217,14 @@ def draw_bbox(image, bboxes_xyxy: Sequence[Sequence[int]], bboxes_pred_xyxy: Opt
     for bbox_xyxy in bboxes_xyxy:
         x1, y1, x2, y2 = bbox_xyxy
         true_rectangle = patches.Rectangle(
-            (x1, y2), x2 - x1, y2 - y2, fill=False, edgecolor="green")
+            (x1, y2), x2 - x1, y2 - y1, fill=False, edgecolor="green")
         ax.add_patch(true_rectangle)
 
     if bboxes_pred_xyxy is not None:
         for pred_xyxy in bboxes_pred_xyxy:
             x1, y1, x2, y2 = pred_xyxy
             pred_rectangle = patches.Rectangle(
-                (x1, y2), x2 - x1, y2 - y2, fill=False, edgecolor="red")
+                (x1, y2), x2 - x1, y2 - y1, fill=False, edgecolor="red")
             ax.add_patch(pred_rectangle)
 
     return fig
