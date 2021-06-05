@@ -6,12 +6,15 @@ import numpy as np
 from matplotlib.path import Path
 import torch
 
+from utils import maybe_resize_large_side
+
 
 class DetectionDataset(data.Dataset):
-    def __init__(self, marks, img_folder: str, transforms=None):
+    def __init__(self, marks, img_folder: str, max_size: int, transforms=None):
         self.marks = marks
         self.img_folder = img_folder
         self.transforms = transforms
+        self.max_size = max_size
 
     def __getitem__(self, index):
         item = self.marks[index]
@@ -19,7 +22,14 @@ class DetectionDataset(data.Dataset):
         img = cv2.imread(img_path, cv2.IMREAD_COLOR)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
+        prev_height, prev_width = img.shape[:2]
+
+        img = maybe_resize_large_side(img, self.max_size)
+
         height, width = img.shape[:2]
+
+        scale_y = height / prev_height
+        scale_x = width / prev_width
 
         box_coords = item['nums']
         boxes = []
@@ -27,7 +37,7 @@ class DetectionDataset(data.Dataset):
         masks = []
 
         for box in box_coords:
-            points = np.array(box['box'])
+            points = np.round(np.array(box['box']) * [scale_y, scale_x]).astype(np.int32)
             x0, y0 = np.min(points[:, 0]), np.min(points[:, 1])
             x2, y2 = np.max(points[:, 0]), np.max(points[:, 1])
 

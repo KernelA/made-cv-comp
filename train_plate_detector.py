@@ -44,6 +44,7 @@ def main(train_config: TrainConfig):
     data = PlatesDetectionDataModule(data_dir=train_config.data_dir,
                                      train_size=train_config.train_size,
                                      seed=train_config.seed,
+                                     max_size=train_config.max_image_size,
                                      num_workers=train_config.num_workers,
                                      batch_size=train_config.detector.batch_size,
                                      train_transforms=train_tranaforms,

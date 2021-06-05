@@ -18,6 +18,24 @@ def denormalize_tensor_to_image(tensor_image, mean=TORCHVISION_RGB_MEAN, std=TOR
     return tensor_image * std[:, None, None] + mean[:, None, None]
 
 
+def maybe_resize_large_side(img, large_size: int):
+    height, width = img.shape[:2]
+
+    aspect_artio = height / width
+
+    if width > large_size or height > large_size:
+        if width > height:
+            new_width = large_size
+            new_height = round(new_width * aspect_artio)
+        else:
+            new_height = large_size
+            new_width = round(new_height / aspect_artio)
+
+        return cv2.resize(img, (new_width, new_height), interpolation=cv2.INTER_AREA)
+
+    return img
+
+
 def simplify_contour(contour, n_corners=4):
     """Бинарный поиск для приближения предсказанной маски 4-хугольником
     """
@@ -216,8 +234,9 @@ def draw_bbox(image, bboxes_xyxy: Sequence[Sequence[int]], bboxes_pred_xyxy: Opt
 
     for bbox_xyxy in bboxes_xyxy:
         x1, y1, x2, y2 = bbox_xyxy
+        print(bbox_xyxy)
         true_rectangle = patches.Rectangle(
-            (x1, y2), x2 - x1, y2 - y1, fill=False, edgecolor="green")
+            (x1, y1), x2 - x1, y2 - y1, fill=False, edgecolor="green")
         ax.add_patch(true_rectangle)
 
     if bboxes_pred_xyxy is not None:
