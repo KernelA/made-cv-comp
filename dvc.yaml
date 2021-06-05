@@ -16,5 +16,5 @@ stages:
       - ${raw_data_zip}
     outs:
       - ./data/raw/made-cv-2021-contest-02-license-plate-recognition:
-          cache: false
+          cache: true
           persist: true

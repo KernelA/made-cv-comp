@@ -3,3 +3,4 @@ _target_: torch.optim.lr_scheduler.ReduceLROnPlateau
 patience: 20
 factor: 0.5
 verbose: True
+min_lr: 1e-5

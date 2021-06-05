@@ -1,5 +1,5 @@
 import json
-from typing import List, Optional
+from typing import List, Optional, Sequence
 
 import cv2
 import numpy as np
@@ -7,6 +7,15 @@ from matplotlib import pyplot as plt
 import torch
 from matplotlib import pyplot as plt
 from matplotlib import patches
+from matplotlib.collections import PathCollection
+
+from transforms import TORCHVISION_RGB_STD, TORCHVISION_RGB_MEAN
+
+
+def denormalize_tensor_to_image(tensor_image: torch.tensor):
+    """tensor_image is [C x H x W]
+    """
+    return tensor_image * TORCHVISION_RGB_STD[:, None, None] + TORCHVISION_RGB_MEAN[:, None, None]
 
 
 def simplify_contour(contour, n_corners=4):
@@ -200,19 +209,23 @@ def load_json(file):
         return json.load(f)
 
 
-def draw_bbox(image, bbox_xyxy: List[int], pred_xyxy: Optional[List[int]] = None):
+def draw_bbox(image, bboxes_xyxy: Sequence[Sequence[int]], bboxes_pred_xyxy: Optional[Sequence[Sequence[int]]] = None):
     fig = plt.figure(figsize=(10, 10))
-    ax = fig.subplot(111)
+    ax = fig.add_subplot(111)
     ax.imshow(image)
 
-    x1, y1, x2, y2 = bbox_xyxy
-    true_rectangle = patches.Reatcnagle((x1, y1), x2 - x1, y2 - y2, fill=False, edgecolor="green")
-    ax.add_patch(true_rectangle)
+    for bbox_xyxy in bboxes_xyxy:
+        x1, y1, x2, y2 = bbox_xyxy
+        true_rectangle = patches.Rectangle(
+            (x1, y2), x2 - x1, y2 - y2, fill=False, edgecolor="green")
+        ax.add_patch(true_rectangle)
 
-    if pred_xyxy is not None:
-        x1, y1, x2, y2 = pred_xyxy
-        pred_rectangle = patches.Reatcnagle((x1, y1), x2 - x1, y2 - y2, fill=False, edgecolor="red")
-        ax.add_patch(pred_rectangle)
+    if bboxes_pred_xyxy is not None:
+        for pred_xyxy in bboxes_pred_xyxy:
+            x1, y1, x2, y2 = pred_xyxy
+            pred_rectangle = patches.Rectangle(
+                (x1, y2), x2 - x1, y2 - y2, fill=False, edgecolor="red")
+            ax.add_patch(pred_rectangle)
 
     return fig
 

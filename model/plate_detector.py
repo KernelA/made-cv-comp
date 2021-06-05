@@ -43,12 +43,14 @@ class PlateDetector(nn.Module):
 class PlateTrainDetector(pl.LightningModule):
     def __init__(self, *, model, optimizer_config,
                  target_metric: str,
+                 nms_iou_threshold: float = 0.5,
                  scheduler_config=None) -> None:
         super().__init__()
         self.model = model
         self._optimizer_config = optimizer_config
         self._scheduler_config = scheduler_config
         self._target_metric = target_metric
+        self._nms_iou_threshold = nms_iou_threshold
 
     def training_step(self, batch, batch_idx):
         images, plates_info = batch
@@ -69,24 +71,47 @@ class PlateTrainDetector(pl.LightningModule):
         min_iou = 0
         index_min = 0
         index_max = 0
+        min_indices = []
+        max_indices = []
 
         mean_iou = 0
 
-        for i, (bbox_pred, bbox_true) in enumerate(zip(predicted_info["boxes"], plates_info["boxes"])):
-            iou = ops.box_iou(bbox_pred, bbox_true)[0, 0]
-            if iou > max_iou:
-                max_iou = iou
-                index_max = i
-            if iou < min_iou:
-                min_iou = iou
-                index_min = i
-            mean_iou += iou
+        for i, (pred_info, true_info) in enumerate(zip(predicted_info, plates_info)):
+            bbox_true = true_info["boxes"]
+            bbox_pred = torch.round(pred_info["boxes"])
 
-        for index in (index_max, index_min):
-            image = denormalize_tensor_to_image(images[index_min].cpu()).permute(1, 2, 0)
-            fig = draw_bbox(image, plates_info["boxes"][index], predicted_info["boxes"][index_min])
+            bbox_indices = ops.nms(bbox_pred,
+                                   pred_info["scores"], self._nms_iou_threshold).view(-1)
+
+            high_score_indices = torch.nonzero(pred_info["scores"][bbox_indices] > 0.5).view(-1)
+            bbox_indices = bbox_indices[high_score_indices].view(-1)
+
+            if len(bbox_indices) > 0:
+                bbox_pred = bbox_pred[bbox_indices]
+                iou_avalues, _ = ops.box_iou(bbox_true, bbox_pred).max(dim=1)
+                iou = iou_avalues.mean().item()
+
+                if iou > max_iou:
+                    max_iou = iou
+                    index_max = i
+                    min_indices = bbox_indices
+
+                if iou < min_iou:
+                    min_iou = iou
+                    index_min = i
+                    max_indices = bbox_indices
+
+                mean_iou += iou
+
+        for index, bbox_indices in zip((index_max, index_min), (max_indices, min_indices)):
+            image = (denormalize_tensor_to_image(
+                images[index].cpu()) * 255).permute(1, 2, 0).to(torch.uint8)
+            fig = draw_bbox(image, plates_info[index]["boxes"].cpu(),
+                            torch.round(predicted_info[index]["boxes"][bbox_indices]).cpu())
+
             tensorboard_logger = self.logger.experiment
-            tensorboard_logger.add_figure(fig, glonal_step=self.global_step, close=True)
+            tensorboard_logger.add_figure(
+                "Valid/Pred", fig, global_step=self.global_step, close=True)
 
         self.log(self._target_metric, mean_iou / len(batch), on_epoch=True)
 

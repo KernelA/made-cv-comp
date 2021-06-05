@@ -61,7 +61,7 @@ def main(train_config: TrainConfig):
                                       scheduler_config=train_config.scheduler,
                                       target_metric=target_metric_name)
 
-    checkpoint_callback = callbacks.ModelCheckpoint(monitor=target_metric_name + '_epoch',
+    checkpoint_callback = callbacks.ModelCheckpoint(monitor=target_metric_name + '_step',
                                                     dirpath=checkpoint_dir,
                                                     filename=f"{{epoch}}-{{{target_metric_name}:.4f}}",
                                                     verbose=True,
@@ -95,6 +95,7 @@ def main(train_config: TrainConfig):
                          progress_bar_refresh_rate=10,
                          precision=train_config.precision,
                          max_epochs=train_config.max_epochs,
+                         val_check_interval=train_config.val_check_interval,
                          callbacks=[checkpoint_callback, lr_monitor]
                          )
 

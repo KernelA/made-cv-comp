@@ -23,3 +23,4 @@ class TrainConfig:
     fast_dev_run: bool = False
     precision: int = 16
     max_epochs: int = MISSING
+    val_check_interval: float = MISSING
