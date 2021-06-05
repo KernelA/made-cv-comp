@@ -26,11 +26,11 @@ stages:
       - ./configs/train_detector.yaml
       - ./configs/detector/detector_base.yaml
       - ./configs/optimizer/adam.yaml
-      - ./scheduler/plato.yaml
+      - ./configs/scheduler/plato.yaml
       - ./train_plate_detector.py
-      - ./models/plate_detector.py
+      - ./model/plate_detector.py
       - ./dataset/plates_data.py
-      - ./dataset/plates_modules.py
+      - ./dataset/plates_module.py
       - ./transforms/transforms.py
     outs:
       - ./exp/detector
