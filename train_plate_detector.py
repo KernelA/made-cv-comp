@@ -67,6 +67,7 @@ def main(train_config: TrainConfig):
                                                     filename=f"{{step}}-{{{target_metric_name}:.4f}}",
                                                     verbose=True,
                                                     save_last=True,
+                                                    every_n_train_steps=train_config.val_check_interval + 1,
                                                     save_top_k=2,
                                                     mode="max",
                                                     save_weights_only=False)

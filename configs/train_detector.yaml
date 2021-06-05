@@ -2,7 +2,7 @@ defaults:
   - detector: detector_base
   - ocr_config: null
   - optimizer: adam
-  - scheduler: null
+  - scheduler: plato
 
 data_dir: ./data/raw/made-cv-2021-contest-02-license-plate-recognition/data
 train_size: 0.9
