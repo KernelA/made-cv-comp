@@ -27,3 +27,42 @@ stages:
       md5: 514408ece1db711fb539c927c674c5f8.dir
       size: 7867426518
       nfiles: 28790
+  train-detector:
+    cmd: python ./train_plate_detector.py -cd ./configs exp_dir=./exp/detector
+    deps:
+    - path: ./configs/detector/detector_base.yaml
+      md5: a38b55f69e27bb87b8b895113aecb8f7
+      size: 61
+    - path: ./configs/optimizer/adam.yaml
+      md5: 17a549147d911e8e2b1b8af7e6850680
+      size: 89
+    - path: ./configs/scheduler/plato.yaml
+      md5: 120d48b0d93663c4a47e3d7ac71bf9c1
+      size: 124
+    - path: ./configs/train_detector.yaml
+      md5: 7d241413288ee070920747773b2d116b
+      size: 283
+    - path: ./data/converted
+      md5: 514408ece1db711fb539c927c674c5f8.dir
+      size: 7867426518
+      nfiles: 28790
+    - path: ./dataset/plates_data.py
+      md5: d97a365603e209c64962c9cdac9554b4
+      size: 2585
+    - path: ./dataset/plates_module.py
+      md5: c8e52bfb16cd4eae665de6f1872fde57
+      size: 3936
+    - path: ./model/plate_detector.py
+      md5: 5812759d9c5611505290265ab129aa4b
+      size: 4881
+    - path: ./train_plate_detector.py
+      md5: 4fdffa015743dcb5e4ffd93bf6ff54e7
+      size: 4230
+    - path: ./transforms/transforms.py
+      md5: 275f6dc57ce73aa8f14f9419bc796cc1
+      size: 784
+    outs:
+    - path: ./exp/detector
+      md5: 6071a20e1767e67e0abcc27410d7abaf.dir
+      size: 2560354552
+      nfiles: 5

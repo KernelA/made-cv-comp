@@ -69,6 +69,15 @@ class PlatesDetectionDataModule(LightningDataModule):
         self._train_size = train_size
         self._marks = load_json(os.path.join(self._data_dir, "train.json"))
         self._marks = filter_marks(self._marks)
+
+        # Remove not existing file. It is temporary solution
+        index = None
+        for i, plate in enumerate(self._marks):
+            if plate["file"] == "train/25632.jpg":
+                index = i
+        if index is not None:
+            del self._marks[index]
+
         self._max_image_size = max_size
         self._train_data = self._val_data = None
 
