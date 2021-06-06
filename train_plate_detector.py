@@ -95,7 +95,7 @@ def main(train_config: TrainConfig):
                          default_root_dir=str(exp_dir),
                          deterministic=False,
                          fast_dev_run=train_config.fast_dev_run,
-                         progress_bar_refresh_rate=10,
+                         progress_bar_refresh_rate=5,
                          precision=train_config.precision,
                          max_epochs=train_config.max_epochs,
                          val_check_interval=train_config.val_check_interval,

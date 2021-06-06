@@ -67,8 +67,8 @@ class PlateTrainDetector(pl.LightningModule):
         images, plates_info = batch
         predicted_info = self.model(images)
 
-        max_iou = 0
-        min_iou = 0
+        max_iou = None
+        min_iou = None
         index_min = 0
         index_max = 0
         min_indices = []
@@ -91,27 +91,28 @@ class PlateTrainDetector(pl.LightningModule):
                 iou_avalues, _ = ops.box_iou(bbox_true, bbox_pred).max(dim=1)
                 iou = iou_avalues.mean().item()
 
-                if iou > max_iou:
+                if max_iou is None or iou > max_iou:
                     max_iou = iou
                     index_max = i
-                    min_indices = bbox_indices
+                    max_indices = bbox_indices
 
-                if iou < min_iou:
+                if min_iou is None or iou < min_iou:
                     min_iou = iou
                     index_min = i
-                    max_indices = bbox_indices
+                    min_indices = bbox_indices
 
                 mean_iou += iou
 
-        for index, bbox_indices in zip((index_max, index_min), (max_indices, min_indices)):
-            image = (denormalize_tensor_to_image(
-                images[index].cpu()) * 255).permute(1, 2, 0).to(torch.uint8)
-            fig = draw_bbox(image, plates_info[index]["boxes"].cpu(),
-                            torch.round(predicted_info[index]["boxes"][bbox_indices]).cpu())
+        for index, bbox_indices, label in zip((index_max, index_min), (max_indices, min_indices), ("best", "worst")):
+            if len(bbox_indices) > 0:
+                image = (denormalize_tensor_to_image(
+                    images[index].cpu()) * 255).permute(1, 2, 0).to(torch.uint8)
+                fig = draw_bbox(image, plates_info[index]["boxes"].cpu(),
+                                torch.round(predicted_info[index]["boxes"][bbox_indices]).cpu())
 
-            tensorboard_logger = self.logger.experiment
-            tensorboard_logger.add_figure(
-                "Valid/Pred", fig, global_step=self.global_step, close=True)
+                tensorboard_logger = self.logger.experiment
+                tensorboard_logger.add_figure(
+                    f"Valid/Pred {label}", fig, global_step=self.global_step, close=True)
 
         self.log(self._target_metric, mean_iou / len(batch))
 

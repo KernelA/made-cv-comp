@@ -242,7 +242,7 @@ def draw_bbox(image, bboxes_xyxy: Sequence[Sequence[int]], bboxes_pred_xyxy: Opt
         for pred_xyxy in bboxes_pred_xyxy:
             x1, y1, x2, y2 = pred_xyxy
             pred_rectangle = patches.Rectangle(
-                (x1, y2), x2 - x1, y2 - y1, fill=False, edgecolor="red")
+                (x1, y1), x2 - x1, y2 - y1, fill=False, edgecolor="red")
             ax.add_patch(pred_rectangle)
 
     return fig
