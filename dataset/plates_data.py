@@ -1,18 +1,20 @@
-from ctypes import resize
 import os
+from typing import List
 
-import cv2
 from torch.utils import data
 import numpy as np
 from matplotlib.path import Path
 import torch
 from torchvision import io
 
+
 from utils import maybe_resize_large_side_tensor
 
 
 class DetectionDataset(data.Dataset):
-    def __init__(self, marks, img_folder: str, max_size: int, transforms=None):
+    def __init__(self, marks: List[dict],
+                 img_folder: str,
+                 max_size: int, transforms=None):
         self.marks = marks
         self.img_folder = img_folder
         self.transforms = transforms
