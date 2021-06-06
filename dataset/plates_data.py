@@ -1,3 +1,4 @@
+from ctypes import resize
 import os
 
 import cv2
@@ -5,8 +6,9 @@ from torch.utils import data
 import numpy as np
 from matplotlib.path import Path
 import torch
+from torchvision import io
 
-from utils import maybe_resize_large_side
+from utils import maybe_resize_large_side_tensor
 
 
 class DetectionDataset(data.Dataset):
@@ -19,14 +21,16 @@ class DetectionDataset(data.Dataset):
     def __getitem__(self, index):
         item = self.marks[index]
         img_path = os.path.join(self.img_folder, item["file"])
-        img = cv2.imread(img_path, cv2.IMREAD_COLOR)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img_path = os.path.splitext(img_path)[0]
+        img_path += ".jpg"
 
-        prev_height, prev_width = img.shape[:2]
+        img = io.read_image(img_path, io.image.ImageReadMode.RGB)
 
-        img = maybe_resize_large_side(img, self.max_size)
+        prev_height, prev_width = img.shape[-2:]
 
-        height, width = img.shape[:2]
+        img = maybe_resize_large_side_tensor(img, self.max_size)
+
+        height, width = img.shape[-2:]
 
         scale_y = height / prev_height
         scale_x = width / prev_width

@@ -1,6 +1,6 @@
 vars:
   - raw_data_zip: ./data/raw/made-cv-2021-contest-02-license-plate-recognition.zip
-  - train_dir: ./data/raw/made-cv-2021-contest-02-license-plate-recognition
+  - train_dir: ./data/converted
 
 stages:
   downloda-data:
@@ -11,13 +11,16 @@ stages:
       - ${raw_data_zip}:
           cache: true
           persist: true
-  unzip:
-    cmd: python -m zipfile -e ${raw_data_zip} ${train_dir}
+  convert_images:
+    cmd: python ./convert_images.py -cd ./configs
     deps:
+      - ./convert_images.py
+      - ./config_data/convert_config.py
+      - ./configs/convert_images.yaml
       - ${raw_data_zip}
     outs:
       - ${train_dir}:
-          cache: false
+          cache: true
           persist: true
   train-detector:
     cmd: python ./train_plate_detector.py -cd ./configs exp_dir=./exp/detector

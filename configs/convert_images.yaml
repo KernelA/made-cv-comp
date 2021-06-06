@@ -1,0 +1,2 @@
+input_zip: ./data/raw/made-cv-2021-contest-02-license-plate-recognition.zip
+out_dir: ./data/converted

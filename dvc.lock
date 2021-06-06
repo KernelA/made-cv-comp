@@ -7,15 +7,23 @@ stages:
     - path: ./data/raw/made-cv-2021-contest-02-license-plate-recognition.zip
       md5: 7b442b92eabd899141e27ff0d7944f32
       size: 6480287422
-  unzip:
-    cmd: python -m zipfile -e ./data/raw/made-cv-2021-contest-02-license-plate-recognition.zip
-      ./data/raw/made-cv-2021-contest-02-license-plate-recognition
+  convert_images:
+    cmd: python ./convert_images.py -cd ./configs
     deps:
+    - path: ./config_data/convert_config.py
+      md5: 4d501fb2755b8b990e5b2da02138d7a7
+      size: 164
+    - path: ./configs/convert_images.yaml
+      md5: 703775aa39497a98bd991aa0498de04e
+      size: 104
+    - path: ./convert_images.py
+      md5: 7655a1d6e63e08a7fc9a2552bffbf514
+      size: 3173
     - path: ./data/raw/made-cv-2021-contest-02-license-plate-recognition.zip
       md5: 7b442b92eabd899141e27ff0d7944f32
       size: 6480287422
     outs:
-    - path: ./data/raw/made-cv-2021-contest-02-license-plate-recognition
-      md5: 85747199f2b7b9aaee4b82f7cd79c3b9.dir
-      size: 6515310377
-      nfiles: 28795
+    - path: ./data/converted
+      md5: 70d57e802edb569ee636eb737e5e27ee.dir
+      size: 7867452032
+      nfiles: 28790

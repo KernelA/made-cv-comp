@@ -1,12 +1,13 @@
+from itertools import count
 import json
 from typing import Optional, Sequence
 
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
-import torch
-from matplotlib import pyplot as plt
 from matplotlib import patches
+import torch
+from torchvision.transforms import functional as VF
 
 from transforms import TORCHVISION_RGB_STD, TORCHVISION_RGB_MEAN
 
@@ -34,6 +35,27 @@ def maybe_resize_large_side(img, large_size: int):
         return cv2.resize(img, (new_width, new_height), interpolation=cv2.INTER_AREA)
 
     return img
+
+
+@torch.jit.script
+def maybe_resize_large_side_tensor(torch_tensor_img, large_size: int):
+    """torch_tensor_img is [C x H x W]
+    """
+    height, width = torch_tensor_img.shape[-2:]
+
+    aspect_artio = height / width
+
+    if width > large_size or height > large_size:
+        if width > height:
+            new_width = large_size
+            new_height = int(round(new_width * aspect_artio))
+        else:
+            new_height = large_size
+            new_width = int(round(new_height / aspect_artio))
+
+        return VF.resize(torch_tensor_img, [new_height, new_width], interpolation=VF.InterpolationMode.NEAREST)
+
+    return torch_tensor_img
 
 
 def simplify_contour(contour, n_corners=4):
@@ -71,19 +93,19 @@ def four_point_transform(image, pts):
 
     tl, tr, br, bl = pts
 
-    width_1 = np.sqrt(((br[0] - bl[0]) ** 2) + ((br[1] - bl[1]) ** 2))
-    width_2 = np.sqrt(((tr[0] - tl[0]) ** 2) + ((tr[1] - tl[1]) ** 2))
+    width_1 = np.linalg.norm(br - bl)
+    width_2 = np.linalg.norm(tr - tl)
     max_width = max(int(width_1), int(width_2))
 
-    height_1 = np.sqrt(((tr[0] - br[0]) ** 2) + ((tr[1] - br[1]) ** 2))
-    height_2 = np.sqrt(((tl[0] - bl[0]) ** 2) + ((tl[1] - bl[1]) ** 2))
+    height_1 = np.linalg.norm(tr - br)
+    height_2 = np.linalg.norm(tl - bl)
     max_height = max(int(height_1), int(height_2))
 
     dst = np.array([
         [0, 0],
         [max_width, 0],
         [max_width, max_height],
-        [0, max_height]], dtype="float32")
+        [0, max_height]], dtype=np.float32)
 
     M = cv2.getPerspectiveTransform(rect, dst)
     warped = cv2.warpPerspective(image, M, (max_width, max_height))
@@ -104,6 +126,43 @@ def order_points(pts):
 
     return rect
 
+
+def extract_plates(image, bboxes: Sequence[Sequence[int]], masks: Sequence[np.ndarray], mask_threshold: float = 0.05):
+    assert image.shape[-1] == 3
+
+    plates = []
+
+    for bbox, mask in zip(bboxes, masks):
+        x_min, y_min, x_max, y_max = bbox
+        image = image[y_min: y_max, x_min: x_max, ...].copy()
+        mask = mask[y_min: y_max, x_min: x_max]
+        height, width = image.shape[:2]
+
+        # В разных версиях opencv этот метод возвращает разное число параметров
+        # contours,_ = cv2.findContours((mask > TRESHOLD_MASK).astype(np.uint8), 1, 1)
+        contours, _ = cv2.findContours((mask > mask_threshold).astype(
+            np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        approx = simplify_contour(contours[0], n_corners=4)
+
+        if approx is None:
+            x0, y0 = 0, 0
+            x1, y1 = width - 1, 0
+            x2, y2 = 0, height - 1
+            x3, y3 = width - 1, height - 1
+        else:
+            x0, y0 = approx[0][0][0], approx[0][0][1]
+            x1, y1 = approx[1][0][0], approx[1][0][1]
+            x2, y2 = approx[2][0][0], approx[2][0][1]
+            x3, y3 = approx[3][0][0], approx[3][0][1]
+
+        points = [[x0, y0], [x2, y2], [x1, y1], [x3, y3]]
+
+        points = np.array(points)
+        crop_mask_img = four_point_transform(image, points)
+        plates.append(crop_mask_img)
+
+    return plates
 
 # @torch.no_grad()
 # def visualize_prediction_plate(file, model, device='cuda', verbose=True, thresh=0.0,

@@ -6,6 +6,7 @@ kaggle
 dvc[gdrive]~=2.3
 pandas~=1.2
 ipywidgets>=7.5
+albumentations~=1.0
 -f https://download.pytorch.org/whl/torch_stable.html
 torch==1.8.1+cu102
 torchvision==0.9.1+cu102
