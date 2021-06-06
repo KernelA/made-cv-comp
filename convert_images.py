@@ -9,7 +9,6 @@ import numpy as np
 import hydra
 from hydra.core.config_store import ConfigStore
 from config_data import ConvertConfig
-from utils import load_json
 
 cs = ConfigStore()
 cs.store("train_detector", node=ConvertConfig)

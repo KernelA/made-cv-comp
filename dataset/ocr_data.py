@@ -1,4 +1,3 @@
-from typing import List
 import string
 import os
 import zipfile
@@ -32,7 +31,7 @@ class OCRDataset(data.Dataset):
         img = io.decode_image(raw_data, mode=ImageReadMode.RGB).permute(1, 2, 0).numpy()
 
         if self.transforms is not None:
-            img = self.transforms(image=img)["image"]
+            img = self.transforms(img)
 
         output = {
             'img': img,

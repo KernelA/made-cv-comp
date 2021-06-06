@@ -17,13 +17,13 @@ stages:
       md5: 703775aa39497a98bd991aa0498de04e
       size: 104
     - path: ./convert_images.py
-      md5: 7655a1d6e63e08a7fc9a2552bffbf514
-      size: 3173
+      md5: 2367a63895481a7d6d95ab4d08bc3445
+      size: 3292
     - path: ./data/raw/made-cv-2021-contest-02-license-plate-recognition.zip
       md5: 7b442b92eabd899141e27ff0d7944f32
       size: 6480287422
     outs:
     - path: ./data/converted
-      md5: 70d57e802edb569ee636eb737e5e27ee.dir
-      size: 7867452032
+      md5: 514408ece1db711fb539c927c674c5f8.dir
+      size: 7867426518
       nfiles: 28790
