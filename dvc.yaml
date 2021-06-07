@@ -11,6 +11,14 @@ stages:
       - ${raw_data_zip}:
           cache: true
           persist: true
+  unzip:
+    cmd: python -m zipfile -e ./data/raw/contest02_data_generated.zip ./data/raw/plates
+    deps:
+      - ./data/raw/contest02_data_generated.zip
+    outs:
+      - ./data/raw/plates:
+          cache: true
+          persist: true
   convert_images:
     cmd: python ./convert_images.py -cd ./configs
     deps:

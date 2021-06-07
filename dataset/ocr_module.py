@@ -3,14 +3,12 @@ import torch
 from torch.utils import data
 
 from .ocr_data import OCRDataset
-from utils import load_json
-
 from .plates_module import collate_fn
 
 
 class OCRDetectionDataModule(LightningDataModule):
     def __init__(self, *,
-                 archive_name: str,
+                 image_dir: str,
                  train_size: float,
                  seed: int,
                  num_workers: int,
@@ -27,12 +25,12 @@ class OCRDetectionDataModule(LightningDataModule):
         self._train_batch_size = train_batch_size
         self._valid_batch_size = valid_batch_size
         self._num_workers = num_workers
-        self._archive_name = archive_name
+        self._image_dir = image_dir
         self._train_size = train_size
         self._train_data = self._val_data = None
 
     def setup(self, stage) -> None:
-        all_data = OCRDataset(self._archive_name, self.train_transforms)
+        all_data = OCRDataset(self._image_dir, self.train_transforms)
 
         train_size = round(self._train_size * len(all_data))
         valid_size = len(all_data) - train_size

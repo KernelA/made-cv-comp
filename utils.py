@@ -1,5 +1,5 @@
 import json
-from typing import Optional, Sequence
+from typing import Optional, Sequence, List
 
 import cv2
 import numpy as np

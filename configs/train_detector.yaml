@@ -1,6 +1,6 @@
 defaults:
   - detector: detector_base
-  - ocr_config: null
+  - ocr: null
   - optimizer: adam
   - scheduler: plato
 

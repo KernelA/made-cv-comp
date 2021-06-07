@@ -12,7 +12,7 @@ class TrainConfig:
     data_dir: str = MISSING
     train_size: float = MISSING
     detector: TrainDetectorConfig = MISSING
-    ocr_config: TrainOCRConfig = MISSING
+    ocr: TrainOCRConfig = MISSING
     seed: int = MISSING
     num_workers: int = MISSING
     optimizer: Any = MISSING

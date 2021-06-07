@@ -1,0 +1,4 @@
+# @package _group_
+train_batch_size: 16
+valid_batch_size: 16
+image_dir: ./data/raw/plates

@@ -66,3 +66,14 @@ stages:
       md5: 6071a20e1767e67e0abcc27410d7abaf.dir
       size: 2560354552
       nfiles: 5
+  unzip:
+    cmd: python -m zipfile -e ./data/raw/contest02_data_generated.zip ./data/raw/plates
+    deps:
+    - path: ./data/raw/contest02_data_generated.zip
+      md5: 077ee8d747efdfdc843915069ebed175
+      size: 106764114
+    outs:
+    - path: ./data/raw/plates
+      md5: a49481778ce7cf3ac608a4af12e700e1.dir
+      size: 95644652
+      nfiles: 59617

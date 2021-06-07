@@ -1,5 +1,7 @@
 import torch
 from torchvision import transforms
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
 
 
 TORCHVISION_RGB_STD_LIST = [0.229, 0.224, 0.225]
@@ -24,3 +26,11 @@ def get_train_transform():
                              std=TORCHVISION_RGB_STD_LIST, inplace=True)
     ]
     )
+
+
+def get_ocr_valid_transform_list(height: int = 64, width: int = 320):
+    return [
+        A.Resize(height, width),
+        A.Normalize(mean=TORCHVISION_RGB_MEAN_LIST, std=TORCHVISION_RGB_STD_LIST),
+        ToTensorV2()
+    ]
